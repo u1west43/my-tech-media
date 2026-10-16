@@ -1,4 +1,5 @@
-﻿---
+﻿@'
+---
 import { createClient } from "microcms-js-sdk";
 
 const client = createClient({
@@ -55,3 +56,4 @@ const posts = response.contents;
     </main>
   </body>
 </html>
+'@ | Set-Content -Encoding utf8 src/pages/index.astro

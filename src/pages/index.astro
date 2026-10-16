@@ -1,0 +1,50 @@
+---
+import { createClient } from "microcms-js-sdk";
+
+// microCMSクライアントの初期化
+const client = createClient({
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: import.meta.env.MICROCMS_API_KEY,
+});
+
+// 記事データの型定義
+type Blog = {
+  id: string;
+  title: string;
+  content: string;
+  publishedAt: string;
+};
+
+// microCMSから「blogs」のデータを取得
+const response = await client.get<{ contents: Blog[] }>({
+  endpoint: "blogs",
+});
+const posts = response.contents;
+---
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>マインテックメディア</title>
+  </head>
+  <body>
+    <main style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: sans-serif;">
+      <h1>🚀 マイ・テックメディア</h1>
+      <p>microCMS ＋ Astro による爆速自動化メディアへようこそ。</p>
+      
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;" />
+
+      <h2>記事一覧</h2>
+      <ul>
+        {
+          posts.map((post) => (
+            <li style="margin-bottom: 20px;">
+              <h3 style="margin: 0 0 5px 0;">{post.title}</h3>
+              <small style="color: #666;">公開日: {new Date(post.publishedAt).toLocaleDateString()}</small>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+  </body>
+</html>

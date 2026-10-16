@@ -1,13 +1,12 @@
----
+﻿---
 import { createClient } from "microcms-js-sdk";
 
-// microCMSクライアントの初期化
-const client = createClient({
+// microCMS繧ｯ繝ｩ繧､繧｢繝ｳ繝医・蛻晄悄蛹・const client = createClient({
   serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
   apiKey: import.meta.env.MICROCMS_API_KEY,
 });
 
-// 記事データの型定義
+// 險倅ｺ九ョ繝ｼ繧ｿ縺ｮ蝙句ｮ夂ｾｩ
 type Blog = {
   id: string;
   title: string;
@@ -15,8 +14,7 @@ type Blog = {
   publishedAt: string;
 };
 
-// microCMSから「blogs」のデータを取得
-const response = await client.get<{ contents: Blog[] }>({
+// microCMS縺九ｉ縲恵logs縲阪・繝・・繧ｿ繧貞叙蠕・const response = await client.get<{ contents: Blog[] }>({
   endpoint: "blogs",
 });
 const posts = response.contents;
@@ -26,16 +24,16 @@ const posts = response.contents;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>マイ・テックメディア</title>
+    <title>繝槭う繝ｻ繝・ャ繧ｯ繝｡繝・ぅ繧｢</title>
   </head>
   <body>
     <main style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: sans-serif;">
-      <h1>🚀 マイ・テックメディア</h1>
-      <p>microCMS ＋ Astro による爆速自動化メディアへようこそ。</p>
+      <h1>噫 繝槭う繝ｻ繝・ャ繧ｯ繝｡繝・ぅ繧｢</h1>
+      <p>microCMS ・・Astro 縺ｫ繧医ｋ辷・溯・蜍募喧繝｡繝・ぅ繧｢縺ｸ繧医≧縺薙◎縲・/p>
       
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;" />
 
-      <h2>記事一覧</h2>
+      <h2>險倅ｺ倶ｸ隕ｧ</h2>
       <ul style="list-style: none; padding: 0;">
         {
           posts.map((post) => (
@@ -49,7 +47,7 @@ const posts = response.contents;
                 </a>
               </h3>
               <small style="color: #666;">
-                公開日: {new Date(post.publishedAt).toLocaleDateString("ja-JP")}
+                蜈ｬ髢区律: {new Date(post.publishedAt).toLocaleDateString("ja-JP")}
               </small>
             </li>
           ))

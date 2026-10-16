@@ -25,7 +25,8 @@ const posts = response.contents;
 <html lang="ja">
   <head>
     <meta charset="utf-8" />
-    <title>マインテックメディア</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>マイ・テックメディア</title>
   </head>
   <body>
     <main style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: sans-serif;">
@@ -35,12 +36,21 @@ const posts = response.contents;
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;" />
 
       <h2>記事一覧</h2>
-      <ul>
+      <ul style="list-style: none; padding: 0;">
         {
           posts.map((post) => (
-            <li style="margin-bottom: 20px;">
-              <h3 style="margin: 0 0 5px 0;">{post.title}</h3>
-              <small style="color: #666;">公開日: {new Date(post.publishedAt).toLocaleDateString()}</small>
+            <li style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0;">
+              <h3 style="margin: 0 0 6px 0;">
+                <a
+                  href={`/blog/${post.id}`}
+                  style="color: #0070f3; text-decoration: none; font-size: 1.2rem;"
+                >
+                  {post.title}
+                </a>
+              </h3>
+              <small style="color: #666;">
+                公開日: {new Date(post.publishedAt).toLocaleDateString("ja-JP")}
+              </small>
             </li>
           ))
         }

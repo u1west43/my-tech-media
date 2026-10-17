@@ -1,5 +1,6 @@
 ﻿---
 import { createClient } from "microcms-js-sdk";
+import Footer from '../components/Footer.astro';
 import "../styles/global.css";
 
 const client = createClient({
@@ -14,15 +15,6 @@ const data = await client.getList({
   },
 });
 ---
----
-// 例: インポート部分
-import BaseLayout from '../layouts/BaseLayout.astro'; // またはお使いのレイアウト
-import Footer from '../components/Footer.astro'; // ★ここを追加
----
-
-<!-- トップページのコンテンツ -->
-
-<Footer /> <!-- ★ページの最後にこれを置く -->
 
 <!doctype html>
 <html lang="ja">
@@ -31,9 +23,9 @@ import Footer from '../components/Footer.astro'; // ★ここを追加
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>マイ・テックメディア</title>
   </head>
-  <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4">
+  <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4 flex flex-col justify-between">
     <!-- mainタグではなくdivにしてglobal.cssの720px制限を回避 -->
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4 w-full">
       
       <!-- サイトヘッダー -->
       <header class="mb-12 text-center md:text-left">
@@ -79,7 +71,7 @@ import Footer from '../components/Footer.astro'; // ★ここを追加
                   </time>
                 </div>
 
-                <!-- 記事タイトル（!text-base と !text-gray-900 でglobal.cssの巨大青文字を強制解除） -->
+                <!-- 記事タイトル -->
                 <h2 class="!text-base !font-bold !leading-snug !m-0 !mb-3">
                   <a href={`/blog/${blog.id}`} class="!text-gray-900 hover:!text-blue-600 transition-colors !no-underline">
                     {blog.title}
@@ -102,5 +94,8 @@ import Footer from '../components/Footer.astro'; // ★ここを追加
       </section>
 
     </div>
+
+    <!-- 共通フッターをHTMLの体裁内に正しく配置 -->
+    <Footer />
   </body>
 </html>

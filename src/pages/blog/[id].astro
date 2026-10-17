@@ -1,5 +1,6 @@
 ---
 import { createClient } from "microcms-js-sdk";
+import "../../styles/global.css";
 
 const client = createClient({
   serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
@@ -11,6 +12,7 @@ export async function getStaticPaths() {
     serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
     apiKey: import.meta.env.MICROCMS_API_KEY,
   });
+
   const data = await client.getList({
     endpoint: "blogs",
   });
@@ -34,51 +36,46 @@ const blog = await client.getListDetail({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{blog.title} | マイ・テックメディア</title>
-    <style>
-      body {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        line-height: 1.8;
-        color: #333;
-      }
-      .back-link {
-        display: inline-block;
-        margin-bottom: 2rem;
-        color: #0070f3;
-        text-decoration: none;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      .title {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        line-height: 1.3;
-      }
-      .date {
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 2rem;
-      }
-      .content {
-        border-top: 1px solid #eee;
-        padding-top: 2rem;
-      }
-      .content img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 4px;
-      }
-    </style>
   </head>
-  <body>
-    <a href="/" class="back-link">← 記事一覧に戻る</a>
-    <article>
-      <h1 class="title">{blog.title}</h1>
-      <p class="date">公開日: {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}</p>
-      <div class="content" set:html={blog.content} />
-    </article>
+  <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4">
+    <div class="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">
+      
+      <!-- 戻るリンク -->
+      <a href="/" class="text-sm font-medium text-blue-600 hover:underline inline-block mb-6">
+        ← 記事一覧に戻る
+      </a>
+
+      <!-- メタ情報（カテゴリ & 公開日） -->
+      <div class="flex items-center gap-3 mb-4 text-xs font-semibold">
+        {blog.category && (
+          <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+            {blog.category.name}
+          </span>
+        )}
+        <time class="text-gray-400">
+          {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}
+        </time>
+      </div>
+
+      <!-- タイトル -->
+      <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
+        {blog.title}
+      </h1>
+
+      <!-- アイキャッチ画像 -->
+      {blog.eyecatch && (
+        <div class="mb-8 overflow-hidden rounded-xl">
+          <img 
+            src={blog.eyecatch.url} 
+            alt={blog.title} 
+            class="w-full h-auto object-cover" 
+          />
+        </div>
+      )}
+
+      <!-- 記事本文（proseクラスで記事全体を一括スタイリング） -->
+      <div class="prose prose-lg max-w-none prose-blue prose-pre:bg-gray-900 prose-pre:text-gray-100" set:html={blog.content} />
+      
+    </div>
   </body>
 </html>

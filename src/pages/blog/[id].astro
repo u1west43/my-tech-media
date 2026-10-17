@@ -28,6 +28,16 @@ const blog = await client.getListDetail({
   endpoint: "blogs",
   contentId: id,
 });
+
+// 本文からHTMLタグを除去してメタディスクリプション用の要約（120文字）を作成
+const plainDescription = blog.content
+  ? blog.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."
+  : "テックブログの記事詳細ページです。";
+
+// ページの完全なURL（Cloudflare Pagesのドメインに合わせて設定）
+const siteUrl = "https://my-tech-media.pages.dev";
+const pageUrl = `${siteUrl}/blog/${blog.id}`;
+const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
 ---
 
 <!doctype html>
@@ -35,7 +45,22 @@ const blog = await client.getListDetail({
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{blog.title} | マイ・テックメディア</title>
+    <title>{blog.title} | Tech Media</title>
+    <meta name="description" content={plainDescription} />
+
+    <!-- OGP (Open Graph Protocol) 基本設定 -->
+    <meta property="og:title" content={blog.title} />
+    <meta property="og:description" content={plainDescription} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content="Tech Media" />
+
+    <!-- Twitter / X カード設定（大きな画像カード形式） -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={blog.title} />
+    <meta name="twitter:description" content={plainDescription} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
   <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4">
     <div class="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">

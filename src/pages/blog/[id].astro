@@ -34,7 +34,7 @@ const plainDescription = blog.content
   ? blog.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."
   : "テックブログの記事詳細ページです。";
 
-const siteUrl = "https://my-tech-media.pages.dev";
+const siteUrl = "https://Core Media Lab.pages.dev";
 const pageUrl = `${siteUrl}/blog/${blog.id}`;
 const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
 ---

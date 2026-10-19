@@ -8,7 +8,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://coremedialab.com', // ← ここを変更（末尾スラッシュなし）
   integrations: [mdx(), sitemap()],
 
   fonts: [

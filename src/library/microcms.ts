@@ -15,6 +15,7 @@ export type Blog = {
     url: string;
     height: number;
     width: number;
+    isFeatured?: boolean;
   };
   publishedAt: string;
 };

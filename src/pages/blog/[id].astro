@@ -13,11 +13,23 @@ export async function getStaticPaths() {
     apiKey: import.meta.env.MICROCMS_API_KEY,
   });
 
-  const data = await client.getList({
-    endpoint: "blogs",
-  });
+  // 100件ずつ自動でループしてすべての記事を全件取得する安全な実装
+  let allContents: any[] = [];
+  let offset = 0;
+  const limit = 100;
+  let totalCount = 0;
 
-  return data.contents.map((content) => ({
+  do {
+    const data = await client.getList({
+      endpoint: "blogs",
+      queries: { offset, limit },
+    });
+    allContents = [...allContents, ...data.contents];
+    totalCount = data.totalCount;
+    offset += limit;
+  } while (allContents.length < totalCount);
+
+  return allContents.map((content) => ({
     params: { id: content.id },
   }));
 }
@@ -34,7 +46,7 @@ const plainDescription = blog.content
   ? blog.content.replace(/<[^>]+>/g, "").slice(0, 120) + "..."
   : "テックブログの記事詳細ページです。";
 
-const siteUrl = "https://Core Media Lab.pages.dev";
+const siteUrl = "https://coremedialab.com";
 const pageUrl = `${siteUrl}/blog/${blog.id}`;
 const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
 ---
@@ -100,7 +112,7 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
           </time>
         </div>
 
-        <!-- 記事タイトル（フォントサイズを24px〜32pxの適切な大きさに抑制） -->
+        <!-- 記事タイトル -->
         <h1 class="!text-2xl md:!text-3xl !font-bold !text-gray-900 !leading-snug !mb-6 !tracking-tight">
           {blog.title}
         </h1>
@@ -116,7 +128,7 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
           </div>
         )}
 
-        <!-- 記事本文：proseで見出し・余白・コードブロックのサイズ感を最適化 -->
+        <!-- 記事本文 -->
         <div 
           class="prose max-w-none text-gray-700 leading-relaxed
                  prose-headings:!font-bold prose-headings:!text-gray-900

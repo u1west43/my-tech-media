@@ -7,7 +7,6 @@ const client = createClient({
   apiKey: import.meta.env.MICROCMS_API_KEY,
 });
 
-// 全件自動ループ取得
 let allContents: any[] = [];
 let offset = 0;
 const limit = 100;
@@ -23,7 +22,6 @@ do {
   offset += limit;
 } while (allContents.length < totalCount);
 
-// おすすめ（isFeatured）を先頭にし、公開日の新しい順にソート
 const sortedContents = [...allContents].sort((a: any, b: any) => {
   const aFeatured = Boolean(a.isFeatured);
   const bFeatured = Boolean(b.isFeatured);
@@ -41,9 +39,9 @@ const pagedBlogs = sortedContents.slice(0, pageSize);
 <html lang="ja">
   <head>
     <!-- Google AdSense 審査用コード -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561" crossorigin="anonymous"></script>
+    <script async src="[https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561](https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561)" crossorigin="anonymous"></script>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ"></script>
+    <script async src="[https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ](https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ)"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -52,7 +50,9 @@ const pagedBlogs = sortedContents.slice(0, pageSize);
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Core Media Lab</title>
+    <title>Core Media Lab | モダンフロントエンド・AI自動化技術メディア</title>
+    <meta name="description" content="Astro、microCMS、Cloudflare Pagesによる高速Webメディア構築から、GAS・Python・Dify・n8n・VPSを活用した業務・メディア運営の完全自動化ノウハウを発信する技術ブログです。" />
+    <link rel="canonical" href="[https://coremedialab.com/](https://coremedialab.com/)" />
   </head>
   <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4 flex flex-col justify-between">
     <div class="max-w-6xl mx-auto px-4 w-full">
@@ -120,9 +120,9 @@ const pagedBlogs = sortedContents.slice(0, pageSize);
         }
       </section>
 
-      <!-- ページネーション -->
+      <!-- ページネーション（何ページ増えても崩れない折り返し＆省略対応） -->
       {totalPages > 1 && (
-        <nav class="mt-12 flex justify-center items-center gap-2">
+        <nav class="mt-12 flex flex-wrap justify-center items-center gap-2" aria-label="ページネーション">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
             pageNum === 1 ? (
               <span class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold text-sm shadow-sm">
@@ -137,20 +137,17 @@ const pagedBlogs = sortedContents.slice(0, pageSize);
               </a>
             )
           ))}
-          {totalPages > 1 && (
-            <a
-              href="/page/2"
-              class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
-            >
-              次へ →
-            </a>
-          )}
+          <a
+            href="/page/2"
+            class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
+          >
+            次へ →
+          </a>
         </nav>
       )}
 
     </div>
 
-    <!-- サイト共通フッター -->
     <footer class="mt-20 pt-8 border-t border-gray-200 text-center text-xs text-gray-400">
       <div class="flex justify-center gap-4 mb-3">
         <a href="/privacy" class="hover:text-gray-600 transition-colors !no-underline">運営者情報・プライバシーポリシー</a>

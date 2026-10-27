@@ -41,11 +41,46 @@ const blog = await client.getListDetail({
   contentId: id,
 });
 
-const plainDescription = blog.content
-  ? blog.content.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 120) + "..."
+// 【自動クレンジング＆リンク補正】microCMSの本文データをビルド時に自動修復
+function sanitizeBlogContent(rawHtml: string): string {
+  if (!rawHtml) return "";
+  let s = rawHtml.trim();
+
+  if (s.startsWith('"') && s.endsWith('"')) {
+    s = s.slice(1, -1).replace(/""/g, '"');
+  }
+
+  s = s.replace(/\[cite:\s*[\d,\s]+\]/g, "");
+  s = s.replace(/\[span_\d+\]\(start_span\)\[span_\d+\]\(end_span\)/g, "");
+
+  const linkMap: Record<string, string> = {
+    "/blog/5qa6jxk9l": "/blog/astro-microcms-cloudflare",
+    "/blog/t46acl_uw": "/blog/astro-microcms-cloudflare",
+    "/blog/gas-6min-limit-vps-python-hybrid": "/blog/gas-six-minute-limit-vps-solution",
+    "/blog/n8n-docker-vps-automation-setup": "/blog/n8n-vps-self-host-guide",
+    "/blog/dify-docker-vps-self-host-setup": "/blog/dify-vps-self-host-guide",
+  };
+  for (const [oldLink, newLink] of Object.entries(linkMap)) {
+    s = s.split(oldLink).join(newLink);
+  }
+
+  s = s.replace(/<hr[^>]*>\s*<div[^>]*>\s*<div[^>]*>\s*(?:<!--[^>]*-->\s*)?<div[^>]*>\s*Ys\s*<\/div>\s*$/i, "");
+
+  const truncatedSuffix = '<a href="/blog/recommended-vps-for-automation">【2026年最新】開発・自動化におすすめのVPS 3選を';
+  if (s.endsWith(truncatedSuffix)) {
+    s += "徹底比較！コストとスペックで選ぶ最適解</a>で詳しく解説しています。</p>\n</blockquote>";
+  }
+
+  return s;
+}
+
+const cleanContent = sanitizeBlogContent(blog.content || "");
+
+const plainDescription = cleanContent
+  ? cleanContent.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 120) + "..."
   : "Core Media Labの技術記事詳細ページです。";
 
-const siteUrl = "[https://coremedialab.com](https://coremedialab.com)";
+const siteUrl = "https://coremedialab.com";
 const pageUrl = `${siteUrl}/blog/${blog.id}`;
 const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
 ---
@@ -54,15 +89,17 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
 <html lang="ja">
   <head>
     <!-- Google AdSense 審査用コード -->
-    <script async src="[https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561](https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561)" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561" crossorigin="anonymous"></script>
+    
     <!-- Google tag (gtag.js) -->
-    <script async src="[https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ](https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ)"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-P4W05TS6HJ');
     </script>
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{blog.title} | Core Media Lab</title>
@@ -129,7 +166,7 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
           </div>
         )}
 
-        <!-- 記事本文 -->
+        <!-- 記事本文（自動クレンジング済み） -->
         <div 
           class="prose max-w-none text-gray-700 leading-relaxed
                  prose-headings:!font-bold prose-headings:!text-gray-900
@@ -139,7 +176,7 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
                  prose-pre:!bg-gray-900 prose-pre:!text-gray-100 prose-pre:!rounded-xl prose-pre:!p-4
                  prose-code:!text-xs md:prose-code:!text-sm
                  prose-a:!text-blue-600 prose-a:!underline hover:prose-a:!text-blue-800" 
-          set:html={blog.content} 
+          set:html={cleanContent} 
         />
 
         <!-- 著者プロフィール（共通コンポーネント） -->

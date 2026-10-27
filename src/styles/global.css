@@ -89,11 +89,6 @@ input {
 table {
 	width: 100%;
 }
-img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
-}
 code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
@@ -133,12 +128,25 @@ hr {
 	height: 1px;
 	width: 1px;
 	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
 	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
 	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
 	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
+}
+
+/* --- 画像・メディアのサイズ暴走を防ぐ基本リセット --- */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px; /* 角丸もここに統合 */
+}
+
+/* カードやサムネイルのレイアウト崩れ防止 */
+article img, 
+.aspect-video img,
+img[src*="imgix.net"],
+img[src*="microcms.io"] {
+  width: 100%;
+  object-fit: cover;
 }

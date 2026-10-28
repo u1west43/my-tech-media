@@ -1,6 +1,7 @@
 ---
 import { createClient } from "microcms-js-sdk";
 import AuthorProfile from "../../components/AuthorProfile.astro";
+import Sidebar from "../../components/Sidebar.astro";
 import "../../styles/global.css";
 
 const client = createClient({
@@ -124,7 +125,7 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
     
     <!-- サイト共通ヘッダーバー -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         <a href="/" class="!text-lg !font-bold !text-gray-900 !no-underline hover:!text-blue-600 transition-colors">
           Core Media Lab
         </a>
@@ -134,63 +135,74 @@ const ogImage = blog.eyecatch ? blog.eyecatch.url : `${siteUrl}/favicon.svg`;
       </div>
     </header>
 
-    <!-- 記事メインコンテナ -->
-    <main class="max-w-4xl w-full mx-auto px-4 py-8 md:py-12">
-      <article class="bg-white p-6 md:p-12 rounded-2xl shadow-sm border border-gray-100">
-        
-        <!-- メタ情報（カテゴリ & 公開日） -->
-        <div class="flex items-center gap-2 mb-4 text-xs font-semibold">
-          {blog.category && (
-            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-              {blog.category.name}
-            </span>
-          )}
-          <time class="text-gray-400">
-            {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}
-          </time>
-        </div>
-
-        <!-- 記事タイトル -->
-        <h1 class="!text-2xl md:!text-3xl !font-bold !text-gray-900 !leading-snug !mb-6 !tracking-tight">
-          {blog.title}
-        </h1>
-
-        <!-- アイキャッチ画像 -->
-        {blog.eyecatch && (
-          <div class="mb-10 overflow-hidden rounded-xl border border-gray-100">
-            <img 
-              src={blog.eyecatch.url} 
-              alt={blog.title} 
-              class="w-full h-auto object-cover max-h-[420px]" 
-            />
+    <!-- 記事メインコンテナ（2カラム構成） -->
+    <div class="max-w-7xl w-full mx-auto px-4 py-8 md:py-12 flex flex-col lg:flex-row gap-8 items-start">
+      
+      <!-- 左側：記事本文エリア -->
+      <main class="flex-1 min-w-0 w-full">
+        <article class="bg-white p-6 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+          
+          <!-- メタ情報（カテゴリ & 公開日） -->
+          <div class="flex items-center gap-2 mb-4 text-xs font-semibold">
+            {blog.category && (
+              <a 
+    href={`/category/${blog.category.id}`} 
+    class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors !no-underline"
+  >
+    {blog.category.name}
+  </a>
+            )}
+            <time class="text-gray-400">
+              {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}
+            </time>
           </div>
-        )}
 
-        <!-- 記事本文（自動クレンジング済み） -->
-        <div 
-          class="prose max-w-none text-gray-700 leading-relaxed
-                 prose-headings:!font-bold prose-headings:!text-gray-900
-                 prose-h2:!text-xl md:prose-h2:!text-2xl prose-h2:!border-b prose-h2:!border-gray-200 prose-h2:!pb-2 prose-h2:!mt-10 prose-h2:!mb-4
-                 prose-h3:!text-lg md:prose-h3:!text-xl prose-h3:!mt-8 prose-h3:!mb-3
-                 prose-p:!text-sm md:prose-p:!text-base prose-p:!leading-loose prose-p:!mb-5
-                 prose-pre:!bg-gray-900 prose-pre:!text-gray-100 prose-pre:!rounded-xl prose-pre:!p-4
-                 prose-code:!text-xs md:prose-code:!text-sm
-                 prose-a:!text-blue-600 prose-a:!underline hover:prose-a:!text-blue-800" 
-          set:html={cleanContent} 
-        />
+          <!-- 記事タイトル -->
+          <h1 class="!text-2xl md:!text-3xl !font-bold !text-gray-900 !leading-snug !mb-6 !tracking-tight">
+            {blog.title}
+          </h1>
 
-        <!-- 著者プロフィール（共通コンポーネント） -->
-        <AuthorProfile />
-        
-        <!-- 記事下部ナビゲーション -->
-        <div class="mt-10 pt-6 border-t border-gray-100 text-center">
-          <a href="/" class="!text-sm !font-semibold !text-blue-600 hover:!underline">
-            ← トップページ（記事一覧）へ戻る
-          </a>
-        </div>
+          <!-- アイキャッチ画像 -->
+          {blog.eyecatch && (
+            <div class="mb-10 overflow-hidden rounded-xl border border-gray-100">
+              <img 
+                src={blog.eyecatch.url} 
+                alt={blog.title} 
+                class="w-full h-auto object-cover max-h-[420px]" 
+              />
+            </div>
+          )}
 
-      </article>
-    </main>
+          <!-- 記事本文（自動クレンジング済み） -->
+          <div 
+            class="prose max-w-none text-gray-700 leading-relaxed
+                   prose-headings:!font-bold prose-headings:!text-gray-900
+                   prose-h2:!text-xl md:prose-h2:!text-2xl prose-h2:!border-b prose-h2:!border-gray-200 prose-h2:!pb-2 prose-h2:!mt-10 prose-h2:!mb-4
+                   prose-h3:!text-lg md:prose-h3:!text-xl prose-h3:!mt-8 prose-h3:!mb-3
+                   prose-p:!text-sm md:prose-p:!text-base prose-p:!leading-loose prose-p:!mb-5
+                   prose-pre:!bg-gray-900 prose-pre:!text-gray-100 prose-pre:!rounded-xl prose-pre:!p-4
+                   prose-code:!text-xs md:prose-code:!text-sm
+                   prose-a:!text-blue-600 prose-a:!underline hover:prose-a:!text-blue-800" 
+            set:html={cleanContent} 
+          />
+
+          <!-- 著者プロフィール（共通コンポーネント） -->
+          <AuthorProfile />
+          
+          <!-- 記事下部ナビゲーション -->
+          <div class="mt-10 pt-6 border-t border-gray-100 text-center">
+            <a href="/" class="!text-sm !font-semibold !text-blue-600 hover:!underline">
+              ← トップページ（記事一覧）へ戻る
+            </a>
+          </div>
+
+        </article>
+      </main>
+
+      <!-- 右側：サイドバーエリア（幅320px固定） -->
+      <Sidebar currentCategoryId={blog?.category?.id} />
+
+    </div>
 
     <!-- サイト共通フッター -->
     <footer class="mt-12 py-8 border-t border-gray-200 text-center text-xs text-gray-400 bg-white">

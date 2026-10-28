@@ -1,5 +1,6 @@
 ---
 import { createClient } from "microcms-js-sdk";
+import Sidebar from "../../components/Sidebar.astro";
 import "../../styles/global.css";
 
 export async function getStaticPaths() {
@@ -70,9 +71,9 @@ const { currentPage, totalPages, blogs } = Astro.props;
     <title>記事一覧（{currentPage}ページ目） | Core Media Lab</title>
   </head>
   <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4 flex flex-col justify-between">
-    <div class="max-w-6xl mx-auto px-4 w-full">
+    <div class="max-w-7xl mx-auto px-4 w-full">
       
-      <header class="mb-12 text-center md:text-left">
+      <header class="mb-10 text-center md:text-left">
         <h1 class="!text-3xl md:!text-5xl !font-black !text-gray-900 tracking-tight mb-2">
           <a href="/" class="!text-gray-900 !no-underline hover:!text-blue-600 transition-colors">Core Media Lab</a>
         </h1>
@@ -81,93 +82,107 @@ const { currentPage, totalPages, blogs } = Astro.props;
         </p>
       </header>
 
-      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          blogs.map((blog: any) => (
-            <article class={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border flex flex-col relative ${blog.isFeatured ? 'border-amber-400 ring-1 ring-amber-400/50' : 'border-gray-100'}`}>
-              
-              {blog.isFeatured && (
-                <div class="absolute top-3 left-3 z-10 bg-amber-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded shadow-sm flex items-center gap-1 tracking-wider">
-                  <span>★</span> PICKUP
-                </div>
-              )}
-
-              <a href={`/blog/${blog.id}`} class="block overflow-hidden aspect-video bg-gray-100">
-                {blog.eyecatch ? (
-                  <img
-                    src={blog.eyecatch.url}
-                    alt={blog.title}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                    No Image
-                  </div>
-                )}
-              </a>
-
-              <div class="p-5 flex flex-col flex-1">
-                <div class="flex items-center gap-2 mb-2 text-xs font-semibold">
-                  {blog.category && (
-                    <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
-                      {blog.category.name}
-                    </span>
+      <!-- 2カラム構成コンテナ（メインコンテンツ ＋ サイドバー） -->
+      <div class="flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- 左側：メイン記事一覧領域 -->
+        <main class="flex-1 min-w-0 w-full">
+          <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {
+              blogs.map((blog: any) => (
+                <article class={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border flex flex-col relative ${blog.isFeatured ? 'border-amber-400 ring-1 ring-amber-400/50' : 'border-gray-100'}`}>
+                  
+                  {blog.isFeatured && (
+                    <div class="absolute top-3 left-3 z-10 bg-amber-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded shadow-sm flex items-center gap-1 tracking-wider">
+                      <span>★</span> PICKUP
+                    </div>
                   )}
-                  <time class="text-gray-400">
-                    {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}
-                  </time>
-                </div>
 
-                <h2 class="!text-base !font-bold !leading-snug !m-0 !mb-3">
-                  <a href={`/blog/${blog.id}`} class="!text-gray-900 hover:!text-blue-600 transition-colors !no-underline">
-                    {blog.title}
+                  <a href={`/blog/${blog.id}`} class="block overflow-hidden aspect-video bg-gray-100">
+                    {blog.eyecatch ? (
+                      <img
+                        src={blog.eyecatch.url}
+                        alt={blog.title}
+                        class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                        No Image
+                      </div>
+                    )}
                   </a>
-                </h2>
 
-                <div class="mt-auto pt-2">
-                  <a href={`/blog/${blog.id}`} class="text-xs font-bold !text-blue-600 hover:underline inline-flex items-center gap-1">
-                    記事を読む →
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))
-        }
-      </section>
+                  <div class="p-5 flex flex-col flex-1">
+                    <div class="flex items-center gap-2 mb-2 text-xs font-semibold">
+                      {blog.category && (
+                        <a 
+    href={`/category/${blog.category.id}`} 
+    class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md hover:bg-blue-200 transition-colors !no-underline"
+  >
+    {blog.category.name}
+  </a>
+                      )}
+                      <time class="text-gray-400">
+                        {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}
+                      </time>
+                    </div>
 
-      <!-- ページネーション（2ページ目以降） -->
-      <nav class="mt-12 flex justify-center items-center gap-2">
-        <a
-          href={currentPage === 2 ? "/" : `/page/${currentPage - 1}`}
-          class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
-        >
-          ← 前へ
-        </a>
+                    <h2 class="!text-base !font-bold !leading-snug !m-0 !mb-3">
+                      <a href={`/blog/${blog.id}`} class="!text-gray-900 hover:!text-blue-600 transition-colors !no-underline">
+                        {blog.title}
+                      </a>
+                    </h2>
 
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-          pageNum === currentPage ? (
-            <span class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold text-sm shadow-sm">
-              {pageNum}
-            </span>
-          ) : (
+                    <div class="mt-auto pt-2">
+                      <a href={`/blog/${blog.id}`} class="text-xs font-bold !text-blue-600 hover:underline inline-flex items-center gap-1">
+                        記事を読む →
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))
+            }
+          </section>
+
+          <!-- ページネーション（2ページ目以降） -->
+          <nav class="mt-12 flex justify-center items-center gap-2">
             <a
-              href={pageNum === 1 ? "/" : `/page/${pageNum}`}
+              href={currentPage === 2 ? "/" : `/page/${currentPage - 1}`}
               class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
             >
-              {pageNum}
+              ← 前へ
             </a>
-          )
-        ))}
 
-        {currentPage < totalPages && (
-          <a
-            href={`/page/${currentPage + 1}`}
-            class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
-          >
-            次へ →
-          </a>
-        )}
-      </nav>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              pageNum === currentPage ? (
+                <span class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold text-sm shadow-sm">
+                  {pageNum}
+                </span>
+              ) : (
+                <a
+                  href={pageNum === 1 ? "/" : `/page/${pageNum}`}
+                  class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
+                >
+                  {pageNum}
+                </a>
+              )
+            ))}
+
+            {currentPage < totalPages && (
+              <a
+                href={`/page/${currentPage + 1}`}
+                class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 font-bold text-sm transition-colors !no-underline"
+              >
+                次へ →
+              </a>
+            )}
+          </nav>
+        </main>
+
+        <!-- 右側：サイドバー領域（幅320px固定） -->
+        <Sidebar />
+
+      </div>
 
     </div>
 

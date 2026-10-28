@@ -1,0 +1,214 @@
+---
+// src/components/Sidebar.astro
+import { createClient } from "microcms-js-sdk";
+
+interface Props {
+  currentCategoryId?: string;
+}
+
+const { currentCategoryId } = Astro.props;
+
+// 【対策5】ビルド時のAPI重複リクエストを防ぐメモリキャッシュ
+const globalCache = globalThis as unknown as {
+  __cmlSidebarCache?: {
+    totalCount: number;
+    categories: { id: string; name: string; desc: string; count: number }[];
+  };
+};
+
+if (!globalCache.__cmlSidebarCache) {
+  const client = createClient({
+    serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+    apiKey: import.meta.env.MICROCMS_API_KEY,
+  });
+
+  let allContents: any[] = [];
+  let offset = 0;
+  const limit = 100;
+  let totalCount = 0;
+
+  do {
+    const res = await client.getList({
+      endpoint: "blogs",
+      queries: { offset, limit, fields: "id,category" },
+    });
+    allContents = [...allContents, ...res.contents];
+    totalCount = res.totalCount;
+    offset += limit;
+  } while (allContents.length < totalCount);
+
+  // デフォルトの説明文マップ（IDまたは名前でマッチ）
+  const descMap: Record<string, string> = {
+    tech: "VPS / Linux / Docker / Cloudflare",
+    "開発・インフラ": "VPS / Linux / Docker / Cloudflare",
+    "headless-cms": "microCMS / API設計 / JAMstack",
+    "ヘッドレスCMS": "microCMS / API設計 / JAMstack",
+    automation: "n8n / Dify / Python / GAS",
+    "自動化・ツール": "n8n / Dify / Python / GAS",
+    operations: "GA4 / GSC / Looker Studio / 収益化",
+    "サイト運営・分析": "GA4 / GSC / Looker Studio / 収益化",
+  };
+
+  // 【対策1】microCMS上の実データからカテゴリID・名前・件数を自動抽出
+  const catMap = new Map<string, { id: string; name: string; desc: string; count: number }>();
+
+  // 基本4カテゴリを初期セット（0件でも表示したい場合用）
+  const defaultCats = [
+    { id: "tech", name: "開発・インフラ" },
+    { id: "headless-cms", name: "ヘッドレスCMS" },
+    { id: "automation", name: "自動化・ツール" },
+    { id: "operations", name: "サイト運営・分析" },
+  ];
+  for (const d of defaultCats) {
+    catMap.set(d.id, { id: d.id, name: d.name, desc: descMap[d.id] || "", count: 0 });
+  }
+
+  for (const item of allContents) {
+    const cat = item.category;
+    if (cat && cat.id) {
+      // 既存の名前と同じカテゴリが別IDで登録されている場合はIDを上書き統合
+      let targetKey = cat.id;
+      for (const [k, v] of catMap.entries()) {
+        if (v.name === cat.name && k !== cat.id) {
+          catMap.delete(k);
+          catMap.set(cat.id, {
+            id: cat.id,
+            name: cat.name,
+            desc: descMap[cat.name] || descMap[cat.id] || "",
+            count: v.count,
+          });
+          break;
+        }
+      }
+
+      const existing = catMap.get(targetKey);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        catMap.set(cat.id, {
+          id: cat.id,
+          name: cat.name || cat.id,
+          desc: descMap[cat.name] || descMap[cat.id] || "技術・実践ノウハウ記事",
+          count: 1,
+        });
+      }
+    }
+  }
+
+  globalCache.__cmlSidebarCache = {
+    totalCount,
+    categories: Array.from(catMap.values()),
+  };
+}
+
+const { totalCount, categories } = globalCache.__cmlSidebarCache;
+
+const featuredLinks = [
+  {
+    href: "/blog/recommended-vps-for-automation",
+    title: "【2026年最新】開発・自動化におすすめのVPS 3選を徹底比較！",
+    tag: "収益・おすすめ",
+  },
+  {
+    href: "/blog/microcms-headless-media-guide",
+    title: "microCMSで脱WordPress！個人メディアをAPI・自動化で省力化する手順",
+    tag: "入門",
+  },
+  {
+    href: "/blog/github-cloudflare-pages-cicd",
+    title: "GitHub × Cloudflare Pagesで実現する完全無料・自動デプロイ環境",
+    tag: "インフラ",
+  },
+];
+---
+
+<!-- 【対策2】スクロールバーを非表示（scrollbar-none相当）にし、高さをコンパクトに最適化 -->
+<aside class="w-full lg:w-80 shrink-0 space-y-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+  <!-- メディア紹介・プロフィール枠 -->
+  <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-black text-xs shadow-sm shrink-0">
+        CML
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-gray-900 m-0 leading-tight">Core Media Lab</h3>
+        <p class="text-[11px] text-gray-400 m-0">Tech & Automation</p>
+      </div>
+    </div>
+    <p class="text-xs text-gray-600 leading-relaxed m-0">
+      モダンフロントエンド（Astro）、ヘッドレスCMS、VPS、AI・自動化ツール（n8n/Python/GAS）による省力化メディア運営ノウハウを検証・発信しています。
+    </p>
+  </div>
+
+  <!-- カテゴリ一覧 -->
+  <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+    <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+      <h3 class="text-xs font-black tracking-wider text-gray-400 uppercase m-0">
+        CATEGORIES
+      </h3>
+      <a href="/" class="text-[11px] font-semibold text-blue-600 hover:underline !no-underline">
+        すべて表示 ({totalCount})
+      </a>
+    </div>
+    <ul class="space-y-1.5 list-none p-0 m-0">
+      {
+        categories.map((cat) => {
+          const isActive = currentCategoryId === cat.id;
+          return (
+            <li>
+              <a
+                href={`/category/${cat.id}`}
+                class={`group flex flex-col p-2 rounded-lg transition-colors !no-underline border ${
+                  isActive
+                    ? "bg-blue-50/80 border-blue-200"
+                    : "border-transparent hover:bg-blue-50/50"
+                }`}
+              >
+                <div class="flex items-center justify-between">
+                  <span class={`text-xs font-bold transition-colors ${isActive ? "text-blue-700" : "text-gray-800 group-hover:text-blue-600"}`}>
+                    {cat.name}
+                  </span>
+                  <span class={`text-[11px] font-bold px-2 py-0.5 rounded-full transition-colors ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-500 group-hover:bg-blue-100 group-hover:text-blue-700"
+                  }`}>
+                    {cat.count}
+                  </span>
+                </div>
+                {cat.desc && (
+                  <span class="text-[10px] text-gray-400 mt-0.5 truncate">
+                    {cat.desc}
+                  </span>
+                )}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <!-- おすすめ記事（内部リンク強化） -->
+  <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+    <h3 class="text-xs font-black tracking-wider text-gray-400 uppercase mb-2.5 pb-2 border-b border-gray-100">
+      FEATURED ARTICLES
+    </h3>
+    <ul class="space-y-2.5 list-none p-0 m-0">
+      {
+        featuredLinks.map((item) => (
+          <li>
+            <a href={item.href} class="block group !no-underline">
+              <span class="inline-block text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded mb-0.5">
+                {item.tag}
+              </span>
+              <p class="text-xs font-semibold text-gray-800 group-hover:text-blue-600 transition-colors leading-snug m-0">
+                {item.title}
+              </p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</aside>

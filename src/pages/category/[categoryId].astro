@@ -1,0 +1,155 @@
+---
+// src/pages/category/[categoryId].astro
+import { createClient } from "microcms-js-sdk";
+import Sidebar from "../../components/Sidebar.astro";
+import "../../styles/global.css";
+
+export async function getStaticPaths() {
+  const client = createClient({
+    serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+    apiKey: import.meta.env.MICROCMS_API_KEY,
+  });
+
+  let allContents: any[] = [];
+  let offset = 0;
+  const limit = 100;
+  let totalCount = 0;
+
+  do {
+    const res = await client.getList({
+      endpoint: "blogs",
+      queries: { offset, limit, orders: "-publishedAt" },
+    });
+    allContents = [...allContents, ...res.contents];
+    totalCount = res.totalCount;
+    offset += limit;
+  } while (allContents.length < totalCount);
+
+  const categories = [
+    { id: "tech", name: "開発・インフラ" },
+    { id: "headless-cms", name: "ヘッドレスCMS" },
+    { id: "automation", name: "自動化・ツール" },
+    { id: "operations", name: "サイト運営・分析" },
+  ];
+
+  return categories.map((cat) => {
+    const filtered = allContents.filter((blog) => blog.category?.id === cat.id);
+    return {
+      params: { categoryId: cat.id },
+      props: {
+        categoryName: cat.name,
+        blogs: filtered,
+      },
+    };
+  });
+}
+
+const { categoryId } = Astro.params;
+const { categoryName, blogs } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3860499997960561" crossorigin="anonymous"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P4W05TS6HJ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-P4W05TS6HJ');
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>「{categoryName}」の記事一覧 | Core Media Lab</title>
+    <meta name="description" content={`Core Media Labの「${categoryName}」カテゴリに関する技術記事一覧です。`} />
+  </head>
+  <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4 flex flex-col justify-between">
+    <div class="max-w-7xl mx-auto px-4 w-full">
+      
+      <header class="mb-10 text-center md:text-left">
+        <p class="text-xs font-bold text-blue-600 mb-1">
+          <a href="/" class="hover:underline !no-underline">← トップページへ戻る</a>
+        </p>
+        <h1 class="!text-2xl md:!text-4xl !font-black !text-gray-900 tracking-tight mb-2">
+          カテゴリ：{categoryName}
+        </h1>
+        <p class="text-gray-500 text-sm">
+          全 {blogs.length} 件の記事
+        </p>
+      </header>
+
+      <div class="flex flex-col lg:flex-row gap-8 items-start">
+        <main class="flex-1 min-w-0 w-full">
+          {blogs.length === 0 ? (
+            <div class="bg-white p-10 rounded-xl border border-gray-100 text-center text-gray-500 text-sm">
+              このカテゴリの記事はまだありません。
+            </div>
+          ) : (
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {
+                blogs.map((blog: any) => (
+                  <article class={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border flex flex-col relative ${blog.isFeatured ? 'border-amber-400 ring-1 ring-amber-400/50' : 'border-gray-100'}`}>
+                    {blog.isFeatured && (
+                      <div class="absolute top-3 left-3 z-10 bg-amber-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded shadow-sm flex items-center gap-1 tracking-wider">
+                        <span>★</span> PICKUP
+                      </div>
+                    )}
+                    <a href={`/blog/${blog.id}`} class="block overflow-hidden aspect-video bg-gray-100">
+                      {blog.eyecatch ? (
+                        <img
+                          src={blog.eyecatch.url}
+                          alt={blog.title}
+                          class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          No Image
+                        </div>
+                      )}
+                    </a>
+                    <div class="p-5 flex flex-col flex-1">
+                      <div class="flex items-center gap-2 mb-2 text-xs font-semibold">
+                        {blog.category && (
+                          <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
+                            {blog.category.name}
+                          </span>
+                        )}
+                        <time class="text-gray-400">
+                          {new Date(blog.publishedAt).toLocaleDateString("ja-JP")}
+                        </time>
+                      </div>
+                      <h2 class="!text-base !font-bold !leading-snug !m-0 !mb-3">
+                        <a href={`/blog/${blog.id}`} class="!text-gray-900 hover:!text-blue-600 transition-colors !no-underline">
+                          {blog.title}
+                        </a>
+                      </h2>
+                      <div class="mt-auto pt-2">
+                        <a href={`/blog/${blog.id}`} class="text-xs font-bold !text-blue-600 hover:underline inline-flex items-center gap-1">
+                          記事を読む →
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                ))
+              }
+            </section>
+          )}
+        </main>
+
+        <!-- 右側：サイドバー（現在のカテゴリIDを渡してハイライト表示） -->
+        <Sidebar currentCategoryId={categoryId} />
+      </div>
+
+    </div>
+
+    <footer class="mt-20 pt-8 border-t border-gray-200 text-center text-xs text-gray-400">
+      <div class="flex justify-center gap-4 mb-3">
+        <a href="/privacy" class="hover:text-gray-600 transition-colors !no-underline">運営者情報・プライバシーポリシー</a>
+        <span>•</span>
+        <a href="/contact" class="hover:text-gray-600 transition-colors !no-underline">お問い合わせ</a>
+      </div>
+      <p>&copy; {new Date().getFullYear()} Core Media Lab. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

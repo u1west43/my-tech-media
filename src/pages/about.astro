@@ -1,0 +1,276 @@
+---
+// src/pages/about.astro
+import Sidebar from "../components/Sidebar.astro";
+import "../styles/global.css";
+
+const pageTitle = "運営者情報・メディアについて | Core Media Lab";
+const pageDesc =
+  "Core Media Lab（コア・メディア・ラボ）の運営者プロフィール、メディアの編集方針・実機検証ポリシー、免責事項およびお問い合わせ先についてご案内します。";
+
+const siteUrl = "https://coremedialab.com";
+
+// Googleクローラーに運営主体を明確に伝える構造化データ（AboutPage）
+const aboutJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "@id": `${siteUrl}/about#webpage`,
+  url: `${siteUrl}/about`,
+  name: pageTitle,
+  description: pageDesc,
+  inLanguage: "ja",
+  isPartOf: {
+    "@type": "WebSite",
+    name: "Core Media Lab",
+    url: siteUrl,
+  },
+  mainEntity: {
+    "@type": "Person",
+    name: "ゆういち",
+    jobTitle: "Webメディア運営者 / 自動化システム開発者",
+    description:
+      "モダンWeb技術（Astro / microCMS / Cloudflare）とAI・自動化基盤（Python / GAS / VPS / Docker / Dify / n8n）を活用した個人メディア構築・業務効率化の実践者。",
+    url: `${siteUrl}/about`,
+  },
+};
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <link rel="canonical" href="https://coremedialab.com/about" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://coremedialab.com/about" />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(aboutJsonLd)}
+    />
+  </head>
+
+  <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+    <!-- 1. 共通ヘッダー -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md border-b border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2.5 text-xl font-extrabold tracking-tight hover:opacity-90 transition">
+          <span class="bg-sky-500 text-slate-950 font-black px-2 py-0.5 rounded text-base">&gt;_</span>
+          <span>Core Media Lab</span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-200">
+          <a href="/category/tech" class="hover:text-sky-400 transition">開発・インフラ</a>
+          <a href="/category/headless-cms" class="hover:text-sky-400 transition">ヘッドレスCMS</a>
+          <a href="/category/automation" class="hover:text-sky-400 transition">自動化・ツール</a>
+          <a href="/category/operations" class="hover:text-sky-400 transition">サイト運営・分析</a>
+          <a href="/about" class="text-sky-400 font-bold border-l border-slate-700 pl-6 transition">運営者情報</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- パンくずリスト -->
+    <div class="bg-white border-b border-slate-200">
+      <div class="max-w-6xl mx-auto px-4 py-2.5 text-xs text-slate-500 flex items-center gap-2">
+        <a href="/" class="hover:text-sky-600 transition">ホーム</a>
+        <span>&gt;</span>
+        <span class="text-slate-800 font-medium">運営者情報・メディアについて</span>
+      </div>
+    </div>
+
+    <!-- 2. メインコンテンツ（2カラム） -->
+    <main class="max-w-6xl mx-auto px-4 py-10 flex-1 w-full">
+      <div class="flex flex-col lg:flex-row items-start gap-8">
+        <!-- 左カラム：運営者情報本文 -->
+        <article class="w-full flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-10">
+          <header class="border-b border-slate-200 pb-6 mb-8">
+            <span class="inline-block bg-sky-50 text-sky-700 border border-sky-200 text-xs font-bold px-3 py-1 rounded-full mb-3">
+              About Us / Profile
+            </span>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+              運営者情報・メディアについて
+            </h1>
+            <p class="text-sm text-slate-500 mt-2">
+              Core Media Lab（コア・メディア・ラボ）の運営方針・検証環境・運営者プロフィールをご案内します。
+            </p>
+          </header>
+
+          <div class="space-y-10 text-slate-700 leading-relaxed text-sm md:text-base">
+            <!-- セクション1：メディアの理念と目的 -->
+            <section>
+              <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-4 pb-2 border-b-2 border-sky-500 inline-block">
+                1. Core Media Lab のミッション
+              </h2>
+              <p class="mb-4">
+                <strong>「Core Media Lab（コア・メディア・ラボ）」</strong>は、個人のWebメディア運営者・ブロガー・個人開発者に向けて、<strong>最新のWeb技術とAI・自動化ツールを活用した「徹底的な運営の省力化・効率化」</strong>を解説する専門技術メディアです。
+              </p>
+              <p>
+                従来の個人ブログ運営では、サーバーの保守管理、重い管理画面での入稿作業、手動でのアクセス集計やSNS告知といった「直接価値を生まない周辺雑務」に膨大な時間が奪われてきました。当メディアでは、実際に運営者自身が構築・稼働させているインフラと自動化パイプラインの一次情報をもとに、読者がそのまま手元で再現できる実践的なガイドを提供しています。
+              </p>
+            </section>
+
+            <!-- セクション2：主な発信テーマと検証技術スタック -->
+            <section>
+              <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-4 pb-2 border-b-2 border-sky-500 inline-block">
+                2. 主な発信テーマと実機検証スタック
+              </h2>
+              <p class="mb-4">
+                当メディアで公開している記事は、すべて以下の実運用環境で実際にコードやコンテナを動かし、発生したエラーや解決手順を検証した上で執筆しています。
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                  <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                    <span class="text-sky-600">■</span> フロントエンド・CMS基盤
+                  </h3>
+                  <ul class="text-xs space-y-1.5 text-slate-600 list-disc list-inside">
+                    <li>静的サイトジェネレーター：Astro / Tailwind CSS</li>
+                    <li>ヘッドレスCMS：microCMS（APIスキーマ設計・imgix最適化）</li>
+                    <li>ホスティング＆CI/CD：GitHub × Cloudflare Pages</li>
+                  </ul>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                  <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                    <span class="text-emerald-600">■</span> AI・ワークフロー自動化基盤
+                  </h3>
+                  <ul class="text-xs space-y-1.5 text-slate-600 list-disc list-inside">
+                    <li>VPS・コンテナ環境：Ubuntu Linux / Docker Compose</li>
+                    <li>AI・iPaaSセルフホスト：Dify / n8n / Uptime Kuma</li>
+                    <li>スクリプト開発：Python（FastAPI） / Google Apps Script（GAS）</li>
+                  </ul>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 md:col-span-2">
+                  <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                    <span class="text-amber-600">■</span> データ分析・テクニカルSEO基盤
+                  </h3>
+                  <ul class="text-xs space-y-1.5 text-slate-600 list-disc list-inside">
+                    <li>アクセス解析：Google Analytics 4（GA4） / Google Search Console</li>
+                    <li>データウェアハウス・BI：Google BigQuery（SQL分析） / Looker Studio</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <!-- セクション3：運営者プロフィール -->
+            <section>
+              <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-4 pb-2 border-b-2 border-sky-500 inline-block">
+                3. 運営者プロフィール
+              </h2>
+
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 md:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-200">
+                  <div>
+                    <p class="text-xs font-bold text-sky-600 mb-0.5">代表・編集責任者</p>
+                    <h3 class="text-lg font-extrabold text-slate-900">ゆういち（Yuichi）</h3>
+                  </div>
+                  <span class="text-xs bg-slate-200 text-slate-700 font-semibold px-3 py-1 rounded-full w-fit">
+                    Webメディア運営 / 自動化エンジニアリング
+                  </span>
+                </div>
+
+                <p class="text-sm text-slate-700 mb-4 leading-relaxed">
+                  複数のWebメディア構築・運営に携わる中で、従来のWordPress運用における表示速度の課題や手作業による入稿・集計コストに限界を感じ、Jamstack構成（Astro × microCMS）およびVPS・APIを活用した自動化システムの研究・開発を開始。
+                </p>
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  「個人でも大企業並みの高速インフラとAI自動化パイプラインを最小コストで持てる時代」をテーマに、日々直面したビルドエラーの解決録から、コピペで動くGAS・Python・SQLコードまでを体系化して発信しています。
+                </p>
+              </div>
+            </section>
+
+            <!-- セクション4：メディア基本情報テーブル -->
+            <section>
+              <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-4 pb-2 border-b-2 border-sky-500 inline-block">
+                4. メディア概要・連絡先
+              </h2>
+
+              <div class="overflow-x-auto">
+                <table class="w-full border-collapse border border-slate-200 text-sm">
+                  <tbody>
+                    <tr class="border-b border-slate-200">
+                      <th class="bg-slate-50 text-left py-3 px-4 font-bold text-slate-800 w-1/3 border-r border-slate-200">
+                        メディア名
+                      </th>
+                      <td class="py-3 px-4 text-slate-700">Core Media Lab（コア・メディア・ラボ）</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                      <th class="bg-slate-50 text-left py-3 px-4 font-bold text-slate-800 border-r border-slate-200">
+                        URL
+                      </th>
+                      <td class="py-3 px-4 text-slate-700">
+                        <a href="https://coremedialab.com" class="text-sky-600 hover:underline">https://coremedialab.com</a>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                      <th class="bg-slate-50 text-left py-3 px-4 font-bold text-slate-800 border-r border-slate-200">
+                        運営責任者
+                      </th>
+                      <td class="py-3 px-4 text-slate-700">ゆういち</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                      <th class="bg-slate-50 text-left py-3 px-4 font-bold text-slate-800 border-r border-slate-200">
+                        お問い合わせ
+                      </th>
+                      <td class="py-3 px-4 text-slate-700">
+                        記事内容に関するご質問やご連絡は、<a href="/contact" class="text-sky-600 font-bold hover:underline">お問い合わせページ</a>よりお願いいたします。
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="bg-slate-50 text-left py-3 px-4 font-bold text-slate-800 border-r border-slate-200">
+                        個人情報保護・免責事項
+                      </th>
+                      <td class="py-3 px-4 text-slate-700">
+                        当サイトの広告配信およびアクセス解析、免責事項については<a href="/privacy" class="text-sky-600 font-bold hover:underline">プライバシーポリシー</a>をご確認ください。
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- トップへ戻る導線 -->
+            <div class="pt-6 border-t border-slate-200 text-center">
+              <a
+                href="/"
+                class="inline-flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm px-6 py-3 rounded-lg shadow transition"
+              >
+                <span>←</span> トップページ（記事一覧）へ戻る
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 右カラム：共通追従サイドバー -->
+        <Sidebar />
+      </div>
+    </main>
+
+    <!-- 3. 共通フッター -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-10 mt-16">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <p class="text-white font-bold text-base mb-1">Core Media Lab</p>
+          <p class="text-xs text-slate-400">
+            AI・自動化を活用した個人向けWebサイト運営・効率化メディア
+          </p>
+        </div>
+
+        <nav class="flex flex-wrap items-center justify-center gap-6 text-xs font-medium">
+          <a href="/" class="hover:text-white transition">ホーム</a>
+          <a href="/about" class="text-white font-bold transition">運営者情報・プロフィール</a>
+          <a href="/privacy" class="hover:text-white transition">プライバシーポリシー・免責事項</a>
+          <a href="/contact" class="hover:text-white transition">お問い合わせ</a>
+          <a href="/sitemap-index.xml" class="hover:text-white transition">サイトマップ</a>
+        </nav>
+      </div>
+      <div class="max-w-6xl mx-auto px-4 mt-6 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">
+        &copy; {new Date().getFullYear()} Core Media Lab. All rights reserved.
+      </div>
+    </footer>
+  </body>
+</html>
